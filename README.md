@@ -9,4 +9,6 @@ A couple things of note if you'd like to play around with this locally:
 - You'll need a bunch of python packages to run this locally. The main ones are sklearn, numpy, and pickle. Look at the import statements in hello.py, process_photos.py, and eigenfaces.py for a full list.
 
 ###Screenshots
-![Home Screen](http://i.imgur.com/f2BtnlG.png "Home Screen")
+![Home Screen](http://i.imgur.com/WSwOHMx.png "Home Screen")
+![Photo uploader](http://i.imgur.com/f2BtnlG.png "Photo uploader")
+![Output](http://i.imgur.com/XdSptM7.png "Output")
