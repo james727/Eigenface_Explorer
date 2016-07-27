@@ -4,7 +4,7 @@ Flask-Script==2.0.5
 Flask-Bootstrap==3.3.6.0
 Flask-WTF==0.12
 Flask-Uploads==0.2.1
-WTForms==2.1==0.2.1
+WTForms==2.1
 Werkzeug==0.11.3
 Flask-Resize==0.6.0
 Pillow==3.1.0
