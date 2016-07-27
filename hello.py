@@ -129,4 +129,4 @@ def get_eigenface_photo_paths(i):
     return files
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
