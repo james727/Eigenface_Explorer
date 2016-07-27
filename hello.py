@@ -92,9 +92,13 @@ def upload():
     image_url = messages['image_name']
     if request.method == 'POST':
         x1, y1, x2, y2 = crop_form.x1.data, crop_form.y1.data, crop_form.x2.data, crop_form.y2.data
+        print "Got coordinates from cropper"
         if x1 != '':
+            print "nonzero coords"
             w, h = crop_form.width.data, crop_form.height.data
+            print "trying to process image...""
             cropped_image_url = process_image.crop_and_save_image(image_url, x1,y1,x2,y2,w,h)
+            print "getting path..."
             image_projections_path = process_image.eigenface_components(cropped_image_url)
             messages = json.dumps({'images_path': image_projections_path, 'cropped_image_url': cropped_image_url})
             session['messages'] = messages
