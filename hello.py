@@ -74,14 +74,17 @@ def index():
 
 @app.route('/eigenfaces', methods = ['GET','POST'])
 def eigenfaces():
+    print "getting image url"
     messages = json.loads(session['messages'])
     images_path = messages['images_path']
     cropped_image_url = '/'+messages['cropped_image_url']
+    print "got image url. Trying to loop through files"
     files = []
     for f in os.listdir(images_path):
         file_number = int(f.split('.')[0])
         file_tuple = (file_number, images_path+str(f))
         files.append(file_tuple)
+    print "got files"
     files = [x[1] for x in sorted(files, key = lambda x: x[0])]
     return render_template('eigenfaces.html', files = files, cropped_image_url = cropped_image_url)
 
@@ -100,8 +103,10 @@ def upload():
             cropped_image_url = process_image.crop_and_save_image(image_url, x1,y1,x2,y2,w,h)
             print "getting path..."
             image_projections_path = process_image.eigenface_components(cropped_image_url)
+            print "got eigenface components path"
             messages = json.dumps({'images_path': image_projections_path, 'cropped_image_url': cropped_image_url})
             session['messages'] = messages
+            print "redirecting to eigenfaces url"
             return redirect(url_for('.eigenfaces'))
         else:
             flash('Please crop the photo to include only your face before proceeding!')
