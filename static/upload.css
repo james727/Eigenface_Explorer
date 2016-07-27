@@ -1,13 +1,13 @@
 div.photo {
   display: inline-block;
-  padding: 10px;
+  padding: 0px;
   flex: 1;
   text-align: center;
 }
 
 div.text_right {
   display: inline-block;
-  padding: 10px;
+  padding: 0px 20px 0px;
   flex: 2;
   width: 320px;
 }

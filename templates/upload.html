@@ -8,12 +8,10 @@
     <h1>EigenFace Explorer Photo Picker</h1>
 </div>
 <div class = 'body'>
-  <div class='photo'>
+  <div class='photo' id = "user_img_div">
     <img id = "user_image" src = {{image_name|resize('x300')}}>
   </div>
-  <div class='photo'>
-    <img id = "preview_image" src = {{image_name|resize('x300')}}>
-  </div>
+
   <div class='text_right'>
     Click on the image and move the frame to crop your photo. It's important that you crop the photo into the smallest possible window containing your face. Your face should be centered in the frame. This will give better results when your face is projected onto the eigenspace.
     <div class = 'formbutton'>
@@ -24,6 +22,15 @@
 <script type="text/javascript">
 $(document).ready(function(){
   jQuery.noConflict();
+  $('<div><img src={{ image_name }} style="position: relative;" /></div>')
+        .css({
+            float: 'left',
+            position: 'relative',
+            overflow: 'hidden',
+            width: '111px',
+            height: '150px'
+        })
+        .insertAfter($('#user_img_div'));
   $('#user_image').imgAreaSelect({aspectRatio: '37:50', handles: true, onSelectEnd: function(img, selection) {
     $('input[name="x1"]').val(selection.x1);
     $('input[name="y1"]').val(selection.y1);
@@ -32,11 +39,11 @@ $(document).ready(function(){
     $('input[name="width"]').val($('#user_image').width());
     $('input[name="height"]').val($('#user_image').height());
   }, onSelectChange: function (img, selection) {
-    var scaleX = 100 / (selection.width || 1);
-    var scaleY = 100 / (selection.height || 1);
+    var scaleX = 111 / (selection.width || 1);
+    var scaleY = 150 / (selection.height || 1);
 
-    $('preview_image').css({
-        width: Math.round(scaleX * 400) + 'px',
+    $('#user_img_div + div > img').css({
+        width: Math.round(scaleX * $('#user_image').width()) + 'px',
         height: Math.round(scaleY * 300) + 'px',
         marginLeft: '-' + Math.round(scaleX * selection.x1) + 'px',
         marginTop: '-' + Math.round(scaleY * selection.y1) + 'px'
