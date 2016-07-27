@@ -38,14 +38,18 @@ def save_image_vector(path,name,image):
     im.save(filename)
 
 def eigenface_components(cropped_image_url):
+    print "getting image..."
     im = Image.open(cropped_image_url)
     im_vector = np.array(list(im.getdata()))
+    print "got image"
 
     # get eigenfaces and normalized input faces
+    print "grabbing pickle file..."
     lfw_data = pickle.load(open('eigenface_data.p','rb'))
     arr_norm = lfw_data['arr_norm']
     mean_image = lfw_data['mean_image']
     eigenfaces = lfw_data['eigenfaces']
+    print "got pickle file"
 
     # get PCA projection of input image img_idx
     img_idx = 1
