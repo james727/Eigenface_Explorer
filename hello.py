@@ -96,7 +96,7 @@ def upload():
         if x1 != '':
             print "nonzero coords"
             w, h = crop_form.width.data, crop_form.height.data
-            print "trying to process image...""
+            print "trying to process image..."
             cropped_image_url = process_image.crop_and_save_image(image_url, x1,y1,x2,y2,w,h)
             print "getting path..."
             image_projections_path = process_image.eigenface_components(cropped_image_url)
