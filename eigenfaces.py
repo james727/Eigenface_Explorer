@@ -41,7 +41,9 @@ def get_eigenfaces():
     print "Complete! Saving pickle files..."
 
     input_data = {'mean_image': mean_image, 'eigenfaces': eigenfaces, 'arr_norm': arr_norm}
-    pickle.dump(input_data, open('eigenface_data.p', 'wb'))
+    f = open('eigenface_data.p', 'wb')
+    pickle.dump(input_data, f)
+    f.close()
     print "Pickle files saved. Shutting up shop now."
 
 if __name__=="__main__":
