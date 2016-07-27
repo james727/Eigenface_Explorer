@@ -1,0 +1,22 @@
+div.photo {
+  display: inline-block;
+  padding: 10px;
+  flex: 1;
+  text-align: center;
+}
+
+div.text_right {
+  display: inline-block;
+  padding: 10px;
+  flex: 2;
+  width: 320px;
+}
+
+div.formbutton {
+  padding: 8px;
+}
+
+div#processed_photo {
+  padding: 5px;
+  text-align: center;
+}

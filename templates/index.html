@@ -1,16 +1,31 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}Flasky{% endblock %}
+{% block title %}EigenFace Explorer{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Hello, {% if name %}{{ name }}{% else %}Stranger{% endif %}!</h1>
-    {% if not known %}
-    <p>Pleased to meet you!</p>
-    {% else %}
-    <p>Happy to see you again!</p>
-    {% endif %}
+    <h1>EigenFace Explorer</h1>
+    <p>EigenFace Explorer is an interactive web tool that allows you to create the EigenFace decomposition of your face. The application allows you to vary the dimension of the eigenspace your face is projected onto. Why does this exist? I'm not really sure, I thought it'd be fun. Why does anything exist, anyways?</p>
 </div>
-{{ wtf.quick_form(form) }}
+<div class = 'body'>
+  <div class = 'left_hand_side_index'>
+    <h3>Upload your file</h3>
+    Upload your file here. You'll need to crop it to the same aspect ratio as the input data set (we'll do that on the next screen), and then we'll scale it down to the appropriate quality and convert it to black and white.
+    <br>
+    <br>
+    {{ wtf.quick_form(form, enctype="multipart/form-data") }}
+    {% if filename %}{{ filename }}{% endif %}
+  </div>
+  <div class = 'right_hand_side'>
+    <h3>Top Eigenfaces from the input dataset</h3>
+    {% for file in files %}
+    <div class = 'item'>
+      <img src = {{ file }}>
+      <div class = 'caption'>
+        Eigenface {{ file.split('.')[0].split('/')[-1] }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 {% endblock %}

@@ -1,0 +1,36 @@
+div.body {
+    display: flex;
+}
+
+div.item {
+    display: inline-block;
+    padding: 8px;
+}
+
+div.left_hand_side {
+    display: inline-block;
+    width: 450px;
+    flex: 1;
+    /*height: 600px;*/
+}
+div.left_hand_side_index {
+    display: inline-block;
+    width: 300px;
+    flex: 1;
+    padding: 0px 20px 0px 0px;
+    /*height: 600px;*/
+}
+
+div.right_hand_side {
+    display: inline-block;
+    /*width: 55%;*/
+    flex: 2;
+}
+
+div.container {
+  width: 80%;
+}
+
+div.caption {
+  text-align: center;
+}

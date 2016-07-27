@@ -6,6 +6,11 @@
 {{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'imgareaselect-default.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'photo_wrapper.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'upload.css') }}" />
+<script type="text/javascript" src="{{ url_for('static', filename = 'jquery.min.js') }}"></script>
+<script type="text/javascript" src="http://odyniec.net/projects/imgareaselect/jquery.imgareaselect.pack.js"></script>
 {% endblock %}
 
 {% block navbar %}
@@ -18,11 +23,13 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Flasky</a>
+            <a class="navbar-brand" href="/">EigenFace Explorer</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
             </ul>
         </div>
     </div>
@@ -37,12 +44,10 @@
         {{ message }}
     </div>
     {% endfor %}
-
     {% block page_content %}{% endblock %}
 </div>
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
-{{ moment.include_moment() }}
 {% endblock %}

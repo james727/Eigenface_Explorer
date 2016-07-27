@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}EigenFace Explorer{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>About this page</h1>
+    <p>How this page works, why it was made, etc. More of a faq than an about.</p>
+</div>
+<div>
+  <h3>What is this?</h3>
+  Think of this site as a demonstration of principal component analysis and the singular value decomposition in practice. By performing PCA on a set of input images, we can get the vectors of principal variation in the set of input faces. We then project input photos onto the space spanned by some subset of the principal component vectors, and see how accurate of a representation of the face we can get.
+  <h3>How does it work</h3>
+  I can't do a better job explaining the math behind eigenfaces than the <a href = 'https://en.wikipedia.org/wiki/Eigenface'>Wikipedia page</a> (and the various links you'll inevitably click to from that article), so I won't even try. Here are a few implementation details:
+  <ol>
+    <li>
+      The dataset used is 'Labeled Faces in the Wild'(<a href = "http://vis-www.cs.umass.edu/lfw/">link here</a>). It comes stock with sklearn. The input dataset appears to be weighted towards males, so women may require a larger number of eigenfaces for a good approximation.
+    </li>
+    <li>
+      All images used are about ~100x100, and any uploaded photos are scaled down as such. It's low quality, but a 100x100 photo reseults in an eigenface in 10,000+ dimensional space. Limiting the photo resolution is necessary for practical performance.
+    <li>
+      The principal components are pre-processed into a pickle file to avoid re-doing the heavy lifting of calculating the eigenfaces for each page load. When you upload a photo, the site projects your face onto the space spanned by the eigenfaces for various values of n.
+  </ol>
+  <h3>Why this page?</h3>
+  I was taking a course on machine learning and had wanted to learn Flask for a while. I had always thought eigenfaces were pretty nifty so I thought it'd be fun to turn into a small site.
+  <h3>Why isn't the site working</h3>
+  I probably don't know, but I'd love to hear about it. Visit the <a href="/contact">contact page</a> to figure out how to get at me with any bugs or improvement suggestions.
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}EigenFace Explorer{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>EigenFace Explorer</h1>
+    <p>Here are ur eigenfaces you filthy animal</p>
+</div>
+<div class = 'body'>
+<div class = 'left_hand_side'>
+  <h3>Your processed photo</h3>
+  <div id = 'processed_photo'>
+    <img src = {{cropped_image_url|resize('x250')}}>
+  </div>
+  Above is your cropped and processed photo. To the right are various eigenface projections of your photo. Note that the n=0 projection is just the average face from the input dataset.
+</div>
+<div class = 'right_hand_side'>
+  <h3>Eigenface projections for various values of n</h3>
+  {% for file in files %}
+  <div class = 'item'>
+    <img src = {{ file }}>
+    <div class = 'caption'>
+      n = {{ file.split('.')[0].split('/')[-1] }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+</div>
+<br>
+<br>
+<br>
+<br>
+{% endblock %}

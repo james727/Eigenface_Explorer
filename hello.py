@@ -1,52 +1,49 @@
 import os
-from flask import Flask, render_template, session, redirect, url_for
+from flask import Flask, render_template, session, redirect, url_for, request, flash
 from flask.ext.script import Manager, Shell
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.moment import Moment
 from flask.ext.wtf import Form
-from wtforms import StringField, SubmitField
+from flask.ext.uploads import UploadSet, configure_uploads, IMAGES
+from wtforms import StringField, SubmitField, FileField, HiddenField
+from flask.ext.wtf.file import FileAllowed, FileRequired
 from wtforms.validators import Required
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate, MigrateCommand
+from werkzeug.utils import secure_filename
+import flask_resize
+import json
+import process_image
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hard to guess string'
-app.config['SQLALCHEMY_DATABASE_URI'] =\
-    'sqlite:///' + os.path.join(basedir, 'data.sqlite')
-app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
 manager = Manager(app)
 bootstrap = Bootstrap(app)
-moment = Moment(app)
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-
-
-class Role(db.Model):
-    __tablename__ = 'roles'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    users = db.relationship('User', backref='role', lazy='dynamic')
-
-    def __repr__(self):
-        return '<Role %r>' % self.name
-
-
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, index=True)
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-
-    def __repr__(self):
-        return '<User %r>' % self.username
-
+app.config['RESIZE_URL'] = ''
+app.config['RESIZE_ROOT'] = './'
+app.config['RESIZE_CACHE_DIR'] = 'static'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
+flask_resize.Resize(app)
 
 class NameForm(Form):
     name = StringField('What is your name?', validators=[Required()])
     submit = SubmitField('Submit')
+
+class FileForm(Form):
+    photo = FileField('Your Photo')
+    submit = SubmitField('Process Photo')
+
+class CropForm(Form):
+    x1 = HiddenField('x1')
+    y1 = HiddenField('y1')
+    x2 = HiddenField('x2')
+    y2 = HiddenField('y2')
+    width = HiddenField('width')
+    height = HiddenField('height')
+    submit = SubmitField('Crop photo and submit for processing')
 
 
 def make_shell_context():
@@ -67,20 +64,72 @@ def internal_server_error(e):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    form = NameForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.name.data).first()
-        if user is None:
-            user = User(username=form.name.data)
-            db.session.add(user)
-            session['known'] = False
+    form = FileForm()
+    files = get_eigenface_photo_paths(30)
+    if request.method == 'POST':
+        filename = secure_filename(form.photo.data.filename)
+        if filename == '':
+            flash('Please select a photo to upload!')
+        elif not allowed_file(filename):
+            flash('Your file must be a standard png or jpeg!')
         else:
-            session['known'] = True
-        session['name'] = form.name.data
-        return redirect(url_for('index'))
-    return render_template('index.html', form=form, name=session.get('name'),
-                           known=session.get('known', False))
+            form.photo.data.save('static/'+filename)
+            image_url = url_for('static', filename = filename)
+            messages = json.dumps({'image_name': image_url})
+            session['messages'] = messages
+            return redirect(url_for('.upload'))
+    else:
+        filename = None
+    return render_template('index.html', form = form, filename = filename, files = files)
 
+@app.route('/eigenfaces', methods = ['GET','POST'])
+def eigenfaces():
+    messages = json.loads(session['messages'])
+    images_path = messages['images_path']
+    cropped_image_url = '/'+messages['cropped_image_url']
+    files = []
+    for f in os.listdir(images_path):
+        file_number = int(f.split('.')[0])
+        file_tuple = (file_number, images_path+str(f))
+        files.append(file_tuple)
+    files = [x[1] for x in sorted(files, key = lambda x: x[0])]
+    return render_template('eigenfaces.html', files = files, cropped_image_url = cropped_image_url)
+
+@app.route('/upload', methods=['GET','POST'])
+def upload():
+    crop_form = CropForm()
+    messages = json.loads(session['messages'])
+    image_url = messages['image_name']
+    if request.method == 'POST':
+        x1, y1, x2, y2 = crop_form.x1.data, crop_form.y1.data, crop_form.x2.data, crop_form.y2.data
+        if x1 != '':
+            w, h = crop_form.width.data, crop_form.height.data
+            cropped_image_url = process_image.crop_and_save_image(image_url, x1,y1,x2,y2,w,h)
+            image_projections_path = process_image.eigenface_components(cropped_image_url)
+            messages = json.dumps({'images_path': image_projections_path, 'cropped_image_url': cropped_image_url})
+            session['messages'] = messages
+            return redirect(url_for('.eigenfaces'))
+        else:
+            flash('Please crop the photo to include only your face before proceeding!')
+    return render_template('upload.html', form = crop_form, image_name = image_url)
+
+@app.route('/about', methods = ['GET'])
+def about():
+    return render_template('about.html')
+
+@app.route('/contact', methods = ['GET'])
+def contact():
+    return render_template('contact.html')
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+def get_eigenface_photo_paths(i):
+    path = 'static/eigenface_images/'
+    files = []
+    for j in range(i):
+        files.append(path+str(j)+'.jpg')
+    return files
 
 if __name__ == '__main__':
-    manager.run()
+    app.run(debug=True)
